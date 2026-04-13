@@ -1,0 +1,151 @@
+<% layout("/layout/boilerplate") -%>
+<div class="row">
+    <div class="col-md-8 offset-md-2"><br>
+    <h3><b>Create a New Listing</b></h3><br>
+    <form action="/listings" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">    
+        <div>
+            <label for="title" class="form-label"><b> Title</b></label>
+            <input type="text" name="listing[title]" placeholder=" Add Title" required class="form-control">
+            <div class="valid-feedback">Title is valid!</div>
+            <div class="invalid-feedback">Title is required!</div>
+            <br><br>
+        </div>
+        <div>
+            <label for="description" class="form-label"><b>Description</b></label>
+            <textarea name="listing[description]" placeholder="Description" required class="form-control"></textarea>
+            <div class="valid-feedback">Description is valid!</div>
+            <div class="invalid-feedback">Description is required!</div>
+            <br><br>
+        </div>
+        <div>
+            <label for="image" class="form-label"><b>Upload Image</b></label>
+            <input type="file" name="listing[image]" class="form-control" required>
+
+            <br><br>
+        </div>
+        <div>
+            <label for="price" class="form-label"><b>Price</b></label>
+            <input type="number" name="listing[price]" placeholder="Price" required class="form-control">
+            <div class="valid-feedback">Price is valid!</div>
+            <div class="invalid-feedback">Price is required!</div>
+            <br><br>
+        </div>
+        <div>
+            <label for="location" class="form-label"><b>Location</b></label>
+            <input type="text" name="listing[location]" id="location" placeholder="Location" required class="form-control">
+            <div class="valid-feedback">Location is valid!</div>
+            <div class="invalid-feedback">Location is required!</div>
+            <br><br>
+        </div>
+        <div>
+            <label for="country" class="form-label"><b>Country</b></label>
+            <input type="text" name="listing[country]" id="country" placeholder="Country" required class="form-control">
+            <div class="valid-feedback">Country is valid!</div>
+            <div class="invalid-feedback">Country is required!</div>
+            <br><br>
+        </div>
+        <div>
+            <input type="hidden" name="listing[lng]" id="lng">
+            <input type="hidden" name="listing[lat]" id="lat"> 
+        </div>
+        <h5 class="form-label"><b>Select Location</b></h5>
+        <div id="map-new" style="height: 400px;"></div>
+        <script>
+                const form = document.querySelector("form");
+                form.addEventListener("submit", function(e) {
+                const lng = document.getElementById("lng").value;
+                const lat = document.getElementById("lat").value;
+                if (!lng || !lat) {
+                e.preventDefault();
+                alert("📍 Please select a location on the map!");
+                }
+                });
+        </script><br>
+        <button type="submit" class="btn btn-dark add-btn">Add</button>
+    </form>
+    </div>
+</div>
+
+<script>
+  maptilersdk.config.apiKey = "i0iVtuV4Dhkh7cc2cBXo";
+
+  const map = new maptilersdk.Map({
+    container: 'map-new',
+    style: maptilersdk.MapStyle.STREETS,
+    center: [77.2090, 28.6139],
+    zoom: 10,
+  });
+
+  let marker;
+
+  map.on("click", function(e) {
+    const coords = e.lngLat;
+
+    if (marker) marker.remove();
+
+    marker = new maptilersdk.Marker()
+      .setLngLat([coords.lng, coords.lat])
+      .addTo(map);
+
+    document.getElementById("lng").value = coords.lng;
+    document.getElementById("lat").value = coords.lat;
+  });
+</script>
+
+<!-- Auto Location Search -->
+<script>
+  const locationInput = document.getElementById("location");
+  const countryInput = document.getElementById("country");
+
+  let debounceTimer;
+
+  function debounceSearch() {
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(async () => {
+
+      const location = locationInput.value;
+      const country = countryInput.value;
+
+      if (!location || !country) return;
+
+      const query = `${location}, ${country}`;
+
+      try {
+        const res = await fetch(
+          `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=i0iVtuV4Dhkh7cc2cBXo`
+        );
+
+        const data = await res.json();
+
+        if (!data.features || data.features.length === 0) return;
+
+        const coords = data.features[0].center;
+
+        // 🔥 Move map
+        map.flyTo({
+          center: coords,
+          zoom: 10
+        });
+
+        // 🔥 Update marker
+        if (marker) marker.remove();
+
+        marker = new maptilersdk.Marker()
+          .setLngLat(coords)
+          .addTo(map);
+
+        // 🔥 Store values
+        document.getElementById("lng").value = coords[0];
+        document.getElementById("lat").value = coords[1];
+
+      } catch (err) {
+        console.log("Error fetching location:", err);
+      }
+
+    }, 800); // debounce delay
+  }
+
+  locationInput.addEventListener("input", debounceSearch);
+  countryInput.addEventListener("input", debounceSearch);
+</script>

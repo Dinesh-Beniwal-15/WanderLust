@@ -1,0 +1,118 @@
+<% layout("/layout/boilerplate") -%>
+
+<body>
+    <div class="filters-container">
+    <div class="filters">
+
+        <a href="/listings" class="filter">
+            <i class="fa-solid fa-globe"></i>
+            <p>All</p>
+        </a>
+
+        <a href="/listings?category=Trending" class="filter">
+            <i class="fa-solid fa-fire"></i>
+            <p>Trending</p>
+        </a>
+
+        <a href="/listings?category=Rooms" class="filter">
+            <i class="fa-solid fa-bed"></i>
+            <p>Rooms</p>
+        </a>
+
+        <a href="/listings?category=Iconic Cities" class="filter">
+            <i class="fa-solid fa-city"></i>
+            <p>Cities</p>
+        </a>
+
+        <a href="/listings?category=Mountains" class="filter">
+            <i class="fa-solid fa-mountain"></i>
+            <p>Mountains</p>
+        </a>
+
+        <a href="/listings?category=Castles" class="filter">
+            <i class="fa-solid fa-chess-rook"></i>
+            <p>Castles</p>
+        </a>
+
+        <a href="/listings?category=Amazing Pools" class="filter">
+            <i class="fa-solid fa-water-ladder"></i>
+            <p>Pools</p>
+        </a>
+
+        <a href="/listings?category=Camping" class="filter">
+            <i class="fa-solid fa-campground"></i>
+            <p>Camping</p>
+        </a>
+
+        <a href="/listings?category=Farms" class="filter">
+            <i class="fa-solid fa-tractor"></i>
+            <p>Farms</p>
+        </a>
+
+    </div>
+    <div class="tax-toggle">
+        <label class="switch">
+            <input type="checkbox" id="taxToggle">
+            <span class="slider"></span>
+        </label>
+        <span>Display total after taxes</span>
+    </div>
+    </div>
+    <br>
+
+    <!-- <form action="/listings/new" method="GET">
+        <button type="submit">Create New Listing</button>
+    </form> -->
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1" >
+        <% for(let listing of allListings){ %>
+
+            <a href="/listings/<%= listing._id %>" style="text-decoration: none; color: inherit;">
+                 <div class="card col listing-card" >
+                    <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image"/>
+                     <div class="card-img-overlay"></div>
+                    <div class="card-body">
+                        <p class="card-text">
+                        <b><%= listing.title %></b>
+                        </p>
+                        <p class="price" data-price="<%= listing.price %>">
+                        ₹ <%= listing.price.toLocaleString("en-IN") %>/night
+                        </p>
+                    </div>
+                </div>
+            </a>
+       
+        <% } %>
+    </div>
+
+    <% if(allListings.length === 0) { %>
+    <div class="no-results text-center">
+        <h2><i class="fa-solid fa-face-frown"></i>No listings found</h2>
+        <p>Try searching a different location or explore all listings.</p>
+
+        <a href="/listings" class="btn search-show  mt-3">
+        🔄 Show All Listings
+        </a>
+    </div>
+    <% } %>
+
+ 
+    
+</body>
+
+<script>
+  const toggle = document.getElementById("taxToggle");
+  const prices = document.querySelectorAll(".price");
+
+  toggle.addEventListener("change", () => {
+    prices.forEach(p => {
+      const basePrice = Number(p.dataset.price);
+
+      if (toggle.checked) {
+        const taxedPrice = Math.round(basePrice * 1.18);
+        p.innerText = `₹${taxedPrice}/night (incl. tax)`;
+      } else {
+        p.innerText = `₹${basePrice}/night`;
+      }
+    });
+  });
+</script>

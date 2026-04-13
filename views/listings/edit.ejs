@@ -1,0 +1,118 @@
+<% layout("/layout/boilerplate") -%>
+<div class="row mt-2">
+    <div class="col-md-8 offset-md-2"><br>
+    <h3>Edit your Listing</h3>
+    <form action="/listings/<%=listing._id %>?_method=PUT" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
+        <div class="mt-3">
+            <label for="title" class="form-label"><b> Title</b></label>
+            <input type="text" class="form-control" name="listing[title]" value="<%=listing.title %>" required>
+            <div class="valid-feedback">Title is valid!</div>
+            <div class="invalid-feedback">Title is required!</div>
+        </div><br>
+        <div class="mt-3">
+            <label for="description" class="form-label"><b>Description</b></label>
+            <textarea name="listing[description]" class="form-control" required><%=listing.description%></textarea>
+            <div class="valid-feedback">Description is valid!</div>
+            <div class="invalid-feedback">Description is required!</div>
+        </div><br>
+
+        <div class="mt-3">
+                <label for="image" class="form-label"><b>Current Image</b></label><br>
+                <img src="<%=originalImageUrl %>" alt="listing_image">
+        </div><br>    
+        <div class="mt-3">
+            <label for="image" class="form-label" ><b>Upload New Image</b></label>
+            <input type="file" class="form-control" name="listing[image]" value="<%=listing.image.url %>">
+            <div class="valid-feedback">Image URL is valid!</div>
+            <div class="invalid-feedback">Image URL is required!</div>
+        </div><br>
+        <div class="mt-3">
+            <label for="price" class="form-label" ><b>Price</b></label>
+            <input type="number" class="form-control" name="listing[price]" required value="<%=listing.price %>">
+            <div class="valid-feedback">Price is valid!</div>
+            <div class="invalid-feedback">Price is required!</div>
+        </div><br>
+        <div class="mt-3">
+            <label for="location" class="form-label"><b>Location</b></label>
+            <input type="text" id="location" class="form-control" name="listing[location]" required value="<%=listing.location %>">
+            <div class="valid-feedback">Location is valid!</div>
+            <div class="invalid-feedback">Location is required!</div>
+        </div>
+        <br>
+        <div class="mt-3">
+            <label for="country" class="form-label"><b>Country</b></label>
+            <input type="text" id="country" class="form-control" name="listing[country]" required value="<%=listing.country %>">
+            <div class="valid-feedback">Country is valid!</div>
+            <div class="invalid-feedback">Country is required!</div>
+        </div><br>
+        <div>
+            <input type="hidden" name="listing[lng]" id="lng" value="<%=listing.geometry.coordinates[0] %>">
+            <input type="hidden" name="listing[lat]" id="lat" value="<%=listing.geometry.coordinates[1] %>">
+        </div>
+        <h5 class="form-label"><b>Select Location</b></h5>
+        <div id="map-edit" style="height: 400px;"></div>
+        <br>
+        <button type="submit" class="btn btn-dark edit-btn">Edit</button>
+    </form>
+    </div>
+</div>   
+<script src="/js/script.js"></script>
+
+<script>
+  maptilersdk.config.apiKey = "i0iVtuV4Dhkh7cc2cBXo";
+
+  const map = new maptilersdk.Map({
+    container: 'map-edit',
+    style: maptilersdk.MapStyle.STREETS,
+    center: [<%= listing.geometry.coordinates[0] %>, <%= listing.geometry.coordinates[1] %>],
+    zoom: 10,
+  });
+
+  let marker = new maptilersdk.Marker()
+    .setLngLat([<%= listing.geometry.coordinates[0] %>, <%= listing.geometry.coordinates[1] %>])
+    .addTo(map);
+
+  const locationInput = document.getElementById("location");
+  const countryInput = document.getElementById("country");
+
+  let timeout;
+
+  function updateMapLive() {
+    const location = locationInput.value.trim();
+    const country = countryInput.value.trim();
+
+    if (!location || !country) return;
+
+    const query = `${location}, ${country}`;
+
+    fetch(`https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=i0iVtuV4Dhkh7cc2cBXo`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.features.length > 0) {
+          const coords = data.features[0].center;
+
+          map.flyTo({
+            center: coords,
+            zoom: 10,
+            speed: 1.2
+          });
+
+          marker.setLngLat(coords);
+
+          // update hidden fields
+          document.getElementById("lng").value = coords[0];
+          document.getElementById("lat").value = coords[1];
+        }
+      })
+      .catch(err => console.log(err));
+  }
+
+  // 🔥 LIVE typing (input event)
+  function debounceLive() {
+    clearTimeout(timeout);
+    timeout = setTimeout(updateMapLive, 400); // faster than before
+  }
+
+  locationInput.addEventListener("input", debounceLive);
+  countryInput.addEventListener("input", debounceLive);
+</script>
