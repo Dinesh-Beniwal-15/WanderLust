@@ -15,6 +15,7 @@ const flash = require('connect-flash');
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const User=require("./models/user.js");
+const Listing = require("./models/listing");
 
 const listingRouter=require('./routes/listing.js');
 const reviewRouter=require('./routes/review.js');
@@ -50,7 +51,7 @@ const store=MongoStore.create({
     touchAfter:24*60*60,
 });   
 
-store.on("error", () =>{
+store.on("error", (err) =>{
     console.log("ERROR IN MONGO SESSION STORE",err);
 });
     
@@ -91,22 +92,14 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.get("/demouser",async(req,res)=>{
-//     let fakeUser=new User({
-//         email:"student@gmail.com",
-//         username:"delta-student"
-//     });    
-//    let registeredUser=await User.register(fakeUser,"helloworld");
-//    res.send(registeredUser);
-// })
+app.get("/", async (req, res) => {
+    const listings = await Listing.find({}).limit(8);
+    res.render("listings/home.ejs", { listings });
+});
 
 app.use('/listings', listingRoutes);
 app.use('/listings/:id/reviews', reviewRouter);
 app.use('/', userRouter);
-
-// app.all('/*', (req,res,next)=>{
-//     next(new ExpressError(404,'Page Not Found'));
-// });
  
 app.use((req,res,next)=>{
     next(new ExpressError(404,'Page Not Found'));

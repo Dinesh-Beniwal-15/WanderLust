@@ -1,0 +1,45 @@
+<% layout("/layout/boilerPlate") %>
+
+<!-- HERO SECTION -->
+<div class="hero">
+    <h1 class="heading">Find your next stay 🏡</h1>
+    <p>Search low prices on hotels, homes and much more...</p>
+
+    <form action="/listings" method="GET" class="hero-search">
+        <input type="text" name="search" placeholder="Search destinations..." required>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- CATEGORIES -->
+<div class="categories">
+    <h3>Explore by Category</h3>
+
+    <div class="category-list">
+        <a href="/listings?category=Trending">🔥 Trending</a>
+        <a href="/listings?category=Rooms">🛏 Rooms</a>
+        <a href="/listings?category=Iconic Cities">🏙 Cities</a>
+        <a href="/listings?category=Mountains">⛰ Mountains</a>
+        <a href="/listings?category=Castles">🏰 Castles</a>
+        <a href="/listings?category=Amazing Pools">🏊 Pools</a>
+    </div>
+</div>
+
+<!-- FEATURED LISTINGS -->
+<div class="container mt-4">
+    <h3>Featured Stays ✨</h3>
+
+    <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1">
+        <% for(let listing of listings){ %>
+            <a href="/listings/<%= listing._id %>" style="text-decoration:none; color:black;">
+                <div class="card listing-card">
+                    <img src="<%= listing.image.url %>" class="card-img-top">
+                    <div class="card-body">
+                        <b><%= listing.title %></b><br>
+                        ₹<%= listing.price.toLocaleString("en-IN") %>/night
+                    </div>
+                </div>
+            </a>
+        <% } %>
+    </div>
+</div>
