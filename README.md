@@ -227,16 +227,25 @@ http://localhost:8080
 ## 📸 Screenshots
 
 ### Home Page
-_Add screenshot here_
+<img width="1885" height="869" alt="image" src="https://github.com/user-attachments/assets/acd27446-d35c-4d96-9f37-544e78812e85" />
+
 
 ### Listing Details
-_Add screenshot here_
+<img width="1882" height="871" alt="image" src="https://github.com/user-attachments/assets/02465532-ead8-42f3-890b-792f7ce5ba70" />
+<img width="1886" height="872" alt="image" src="https://github.com/user-attachments/assets/a4fd5325-585e-459d-99ae-f3c10554a789" />
+<img width="1889" height="869" alt="image" src="https://github.com/user-attachments/assets/491cb4fa-b607-4470-9338-743f91a46803" />
+
+
 
 ### Create Listing
-_Add screenshot here_
+<img width="1878" height="870" alt="image" src="https://github.com/user-attachments/assets/ccc763c7-e5e0-477f-9fe8-f2a61b617465" />
+<img width="1884" height="870" alt="image" src="https://github.com/user-attachments/assets/90721748-a95b-4cd1-b1c4-e7585c3aaf90" />
+
+
 
 ### Login Page
-_Add screenshot here_
+<img width="1913" height="875" alt="image" src="https://github.com/user-attachments/assets/db07012b-9b6b-4293-8a6c-9a4aa69d76e1" />
+
 
 ---
 
